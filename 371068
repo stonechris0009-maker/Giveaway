@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG GIVEAWAY GAMES - Premium Edition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c0c0c, #1a1a2e, #16213e);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .game-container {
+            width: 400px;
+            height: 600px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            overflow: hidden;
+            position: relative;
+            border: 2px solid rgba(255, 215, 0, 0.5);
+        }
+        
+        .screen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            transition: opacity 0.5s;
+            text-align: center;
+        }
+        
+        #welcome-screen {
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), 
+                        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600" viewBox="0 0 400 600"><rect width="400" height="600" fill="%23000"/><path d="M200,100 Q250,50 300,100 T400,100" stroke="%23FFD700" stroke-width="2" fill="none"/><path d="M0,200 Q50,150 100,200 T200,200" stroke="%23FFD700" stroke-width="2" fill="none"/><path d="M200,300 Q250,250 300,300 T400,300" stroke="%23FFD700" stroke-width="2" fill="none"/><path d="M0,400 Q50,350 100,400 T200,400" stroke="%23FFD700" stroke-width="2" fill="none"/></svg>');
+            z-index: 10;
+        }
+        
+        #code-screen {
+            z-index: 5;
+            opacity: 0;
+            pointer-events: none;
+            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85));
+        }
+        
+        #game-screen {
+            z-index: 5;
+            opacity: 0;
+            pointer-events: none;
+            background: linear-gradient(to bottom, #1a2a6c, #b21f1f, #fdbb2d);
+        }
+        
+        #end-screen {
+            z-index: 5;
+            opacity: 0;
+            pointer-events: none;
+            background: linear-gradient(to bottom, #0c0c0c, #1a1a2e);
+        }
+        
+        .gold-text {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(to right, #FFD700, #FFEC8B, #FFD700);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #aaa;
+            margin-bottom: 40px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(to right, #FFD700, #FFA500);
+            color: #000;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin: 15px 0;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+            border: none;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.6);
+        }
+        
+        .btn:disabled {
+            background: linear-gradient(to right, #666, #888);
+            color: #444;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .code-input {
+            width: 250px;
+            padding: 15px;
+            margin: 20px 0;
+            border: 2px solid #FFD700;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-size: 1.1rem;
+            text-align: center;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .code-input:focus {
+            border-color: #FFA500;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            transform: scale(1.05);
+        }
+        
+        .arrow {
+            font-size: 2rem;
+            margin: 10px 0;
+            animation: bounce 1.5s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(10px); }
+        }
+        
+        .coin {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle at 30% 30%, #FFD700, #B8860B);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            animation: fall linear forwards;
+        }
+        
+        @keyframes fall {
+            to {
+                transform: translateY(600px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .game-header {
+            width: 100%;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px solid #FFD700;
+        }
+        
+        .timer, .score-display {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .game-area {
+            width: 100%;
+            height: 450px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .panda {
+            position: absolute;
+            bottom: 80px;
+            left: 180px;
+            font-size: 3rem;
+            transition: left 0.1s ease-out;
+            z-index: 10;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
+        }
+        
+        .apple {
+            position: absolute;
+            font-size: 2rem;
+            z-index: 5;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
+            transition: transform 0.2s;
+        }
+        
+        .bomb {
+            position: absolute;
+            font-size: 1.8rem;
+            z-index: 5;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
+            animation: spin 2s infinite linear;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .golden-apple {
+            position: absolute;
+            font-size: 2.2rem;
+            z-index: 5;
+            filter: drop-shadow(0 0 8px gold);
+            animation: glow 1.5s infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 5px gold); }
+            to { filter: drop-shadow(0 0 15px gold); }
+        }
+        
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            border: 2px solid #FFD700;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        
+        .control-btn:active {
+            transform: scale(0.9);
+            background: rgba(255, 215, 0, 0.2);
+        }
+        
+        .final-score {
+            font-size: 3rem;
+            color: #FFD700;
+            margin: 20px 0;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        .message {
+            font-size: 1.2rem;
+            margin: 20px 0;
+            color: #ccc;
+            text-align: center;
+            max-width: 80%;
+        }
+        
+        .highlight {
+            color: #FFD700;
+            font-weight: bold;
+        }
+        
+        .error {
+            color: #ff4444;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        
+        .success {
+            color: #00ff00;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        
+        .used-code {
+            color: #ffaa00;
+            margin-top: 10px;
+        }
+        
+        .combo-display {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #FFD700;
+            opacity: 0;
+            transition: opacity 0.3s;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+        }
+        
+        .power-up {
+            position: absolute;
+            font-size: 1.8rem;
+            z-index: 5;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
+            animation: float 3s infinite ease-in-out;
+        }
+        
+        .leaderboard {
+            margin-top: 20px;
+            width: 80%;
+            max-height: 150px;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            padding: 10px;
+        }
+        
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255,215,0,0.3);
+        }
+        
+        .multiplier-active {
+            animation: pulse 0.5s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+        
+        .achievement-popup {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid gold;
+            text-align: center;
+            z-index: 20;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        
+        .difficulty-selector {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .difficulty-btn {
+            padding: 8px 15px;
+            background: rgba(255,215,0,0.2);
+            border: 1px solid #FFD700;
+            border-radius: 5px;
+            color: #FFD700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .difficulty-btn.active {
+            background: #FFD700;
+            color: #000;
+        }
+        
+        .music-control {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255,215,0,0.2);
+            border: 1px solid #FFD700;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+        
+        .music-control:hover {
+            background: rgba(255,215,0,0.4);
+        }
+        
+        .debug-info {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            font-size: 0.7rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Welcome Screen -->
+        <div class="screen" id="welcome-screen">
+            <div class="music-control" id="music-toggle">🎵</div>
+            <div class="gold-text">WELCOME TO</div>
+            <div class="gold-text">SV GIVEAWAY GAMES</div>
+            <div class="subtitle">Premium Gaming Experience</div>
+            
+            <div class="difficulty-selector">
+                <div class="difficulty-btn active" data-difficulty="easy">Easy</div>
+                <div class="difficulty-btn" data-difficulty="medium">Medium</div>
+                <div class="difficulty-btn" data-difficulty="hard">Hard</div>
+            </div>
+            
+            <button class="btn" id="start-btn">START THE GAME</button>
+            <div class="message">Select difficulty and enter code to play</div>
+        </div>
+        
+        <!-- Code Screen -->
+        <div class="screen" id="code-screen">
+            <div class="gold-text">OOPS THIS IS A GAME</div>
+            <div class="arrow">↓</div>
+            <div class="message">Enter the game code to continue</div>
+            <input type="text" class="code-input" id="code-input" placeholder="Enter Code Here" autocomplete="off">
+            <button class="btn" id="submit-code">ENTER GAME</button>
+            <div class="message">Coins are falling! Find the right code!</div>
+            <div id="code-message"></div>
+        </div>
+        
+        <!-- Game Screen -->
+        <div class="screen" id="game-screen">
+            <div class="game-header">
+                <div class="timer">TIME: <span id="time-left">120</span>s</div>
+                <div class="score-display">POINTS: <span id="score">0</span></div>
+                <div class="score-display">COMBO: <span id="combo">1x</span></div>
+            </div>
+            <div class="combo-display" id="combo-display"></div>
+            <div class="game-area">
+                <div class="panda" id="panda">🐼</div>
+                <!-- Items will be generated here -->
+            </div>
+            <div class="controls">
+                <div class="control-btn" id="left-btn">←</div>
+                <div class="control-btn" id="right-btn">→</div>
+            </div>
+        </div>
+        
+        <!-- End Screen -->
+        <div class="screen" id="end-screen">
+            <div class="gold-text">CONGRATULATIONS</div>
+            <div class="message">This is your score for today!</div>
+            <div class="final-score" id="final-score">0</div>
+            <div class="message">You collected <span class="highlight" id="apples-eaten">0</span> apples!</div>
+            <div class="message">Highest Combo: <span class="highlight" id="highest-combo">1x</span></div>
+            
+            <div class="leaderboard">
+                <div class="message">TOP SCORES</div>
+                <div id="leaderboard-list"></div>
+            </div>
+            
+            <button class="btn" id="play-again">PLAY AGAIN</button>
+        </div>
+        
+        <!-- Achievement Popup -->
+        <div class="achievement-popup" id="achievement-popup">
+            <div class="gold-text" id="achievement-title">ACHIEVEMENT UNLOCKED!</div>
+            <div class="message" id="achievement-desc"></div>
+        </div>
+    </div>
+
+    <audio id="welcome-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-game-show-intro-331.mp3" preload="auto"></audio>
+    <audio id="drum-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-epic-drum-553.mp3" preload="auto"></audio>
+    <audio id="coin-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" preload="auto"></audio>
+    <audio id="eat-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-bonus-earned-in-video-game-2058.mp3" preload="auto"></audio>
+    <audio id="game-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-game-show-suspense-waiting-667.mp3" preload="auto"></audio>
+    <audio id="end-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-drum-2026.mp3" preload="auto"></audio>
+    <audio id="bomb-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-explosion-rumble-2396.mp3" preload="auto"></audio>
+    <audio id="combo-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3" preload="auto"></audio>
+    <audio id="powerup-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-magic-sparkles-3026.mp3" preload="auto"></audio>
+    <audio id="background-music" loop preload="auto">
+        <source src="https://assets.mixkit.co/music/preview/mixkit-game-show-suspense-667.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // Game elements
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const codeScreen = document.getElementById('code-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const endScreen = document.getElementById('end-screen');
+        const startBtn = document.getElementById('start-btn');
+        const submitCodeBtn = document.getElementById('submit-code');
+        const codeInput = document.getElementById('code-input');
+        const playAgainBtn = document.getElementById('play-again');
+        const panda = document.getElementById('panda');
+        const leftBtn = document.getElementById('left-btn');
+        const rightBtn = document.getElementById('right-btn');
+        const timeLeft = document.getElementById('time-left');
+        const scoreDisplay = document.getElementById('score');
+        const finalScore = document.getElementById('final-score');
+        const applesEaten = document.getElementById('apples-eaten');
+        const codeMessage = document.getElementById('code-message');
+        const comboDisplay = document.getElementById('combo-display');
+        const comboText = document.getElementById('combo');
+        const highestCombo = document.getElementById('highest-combo');
+        const leaderboardList = document.getElementById('leaderboard-list');
+        const achievementPopup = document.getElementById('achievement-popup');
+        const achievementTitle = document.getElementById('achievement-title');
+        const achievementDesc = document.getElementById('achievement-desc');
+        const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+        const musicToggle = document.getElementById('music-toggle');
+        const backgroundMusic = document.getElementById('background-music');
+        
+        // Audio elements
+        const welcomeSound = document.getElementById('welcome-sound');
+        const drumSound = document.getElementById('drum-sound');
+        const coinSound = document.getElementById('coin-sound');
+        const eatSound = document.getElementById('eat-sound');
+        const gameSound = document.getElementById('game-sound');
+        const endSound = document.getElementById('end-sound');
+        const bombSound = document.getElementById('bomb-sound');
+        const comboSound = document.getElementById('combo-sound');
+        const powerupSound = document.getElementById('powerup-sound');
+        
+        // Game variables
+        let score = 0;
+        let gameTime = 120;
+        let gameInterval;
+        let itemInterval;
+        let pandaPosition = 180;
+        const correctCode = "SVGAMING24";
+        const masterKey = "20232023"; // Hidden master key
+        let coins = [];
+        let usedIPs = JSON.parse(localStorage.getItem('usedIPs') || '{}');
+        let userIP = localStorage.getItem('userIP') || 'unknown';
+        let combo = 1;
+        let comboTimeout;
+        let highestComboValue = 1;
+        let applesCollected = 0;
+        let difficulty = 'easy';
+        let leaderboard = JSON.parse(localStorage.getItem('leaderboard') || '[]');
+        let activePowerUps = [];
+        let speedMultiplier = 1;
+        let isMusicPlaying = false;
+        
+        // Difficulty settings
+        const difficultySettings = {
+            easy: { appleFrequency: 1000, bombFrequency: 5000, powerUpFrequency: 10000, speed: 1 },
+            medium: { appleFrequency: 800, bombFrequency: 4000, powerUpFrequency: 8000, speed: 1.2 },
+            hard: { appleFrequency: 600, bombFrequency: 3000, powerUpFrequency: 6000, speed: 1.5 }
+        };
+        
+        // Initialize IP tracking
+        async function initIP() {
+            try {
+                if (userIP === 'unknown') {
+                    userIP = `192.168.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`;
+                    localStorage.setItem('userIP', userIP);
+                }
+            } catch (error) {
+                console.log("IP detection failed, using fallback");
+            }
+        }
+        
+        // Start the welcome screen with sound
+        window.addEventListener('load', async () => {
+            await initIP();
+            welcomeSound.play().catch(e => console.log("Audio play failed:", e));
+            drumSound.play().catch(e => console.log("Drum sound failed:", e));
+            
+            // Start background music
+            setTimeout(() => {
+                backgroundMusic.volume = 0.3;
+                backgroundMusic.play().catch(e => console.log("Background music failed:", e));
+                isMusicPlaying = true;
+                musicToggle.textContent = "🔊";
+            }, 1000);
+            
+            updateLeaderboardDisplay();
+        });
+        
+        // Music toggle
+        musicToggle.addEventListener('click', () => {
+            if (isMusicPlaying) {
+                backgroundMusic.pause();
+                musicToggle.textContent = "🔇";
+            } else {
+                backgroundMusic.play();
+                musicToggle.textContent = "🔊";
+            }
+            isMusicPlaying = !isMusicPlaying;
+        });
+        
+        // Difficulty selection
+        difficultyBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                difficultyBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                difficulty = btn.dataset.difficulty;
+            });
+        });
+        
+        // Start button - go to code screen
+        startBtn.addEventListener('click', () => {
+            welcomeScreen.style.opacity = '0';
+            welcomeScreen.style.pointerEvents = 'none';
+            codeScreen.style.opacity = '1';
+            codeScreen.style.pointerEvents = 'auto';
+            
+            // Reset code input and enable everything
+            codeInput.value = '';
+            codeInput.placeholder = 'Enter Code Here';
+            codeInput.disabled = false;
+            submitCodeBtn.disabled = false;
+            codeMessage.innerHTML = '';
+            codeInput.focus();
+            
+            startCoinAnimation();
+        });
+        
+        // Submit code button - COMPLETELY FIXED VERSION
+        submitCodeBtn.addEventListener('click', () => {
+            const enteredCode = codeInput.value.trim();
+            
+            console.log("Submitted code:", enteredCode);
+            console.log("User IP:", userIP);
+            console.log("Used IPs:", usedIPs);
+            
+            // Check if it's the master key
+            if (enteredCode === masterKey) {
+                console.log("Master key accepted!");
+                codeMessage.innerHTML = `<div class="success">Master key accepted! Welcome back!</div>`;
+                
+                setTimeout(() => {
+                    codeScreen.style.opacity = '0';
+                    codeScreen.style.pointerEvents = 'none';
+                    gameScreen.style.opacity = '1';
+                    gameScreen.style.pointerEvents = 'auto';
+                    
+                    stopCoinAnimation();
+                    startGame();
+                }, 1000);
+                return;
+            }
+            
+            // Check if it's the regular game code
+            if (enteredCode.toUpperCase() === correctCode) {
+                console.log("Regular code accepted!");
+                
+                // Check IP restriction for regular users
+                if (usedIPs[userIP]) {
+                    codeMessage.innerHTML = `<div class="used-code">This IP has already used the regular code!<br>Try the master key for unlimited access.</div>`;
+                    return;
+                }
+                
+                // Regular user - mark IP as used
+                usedIPs[userIP] = true;
+                localStorage.setItem('usedIPs', JSON.stringify(usedIPs));
+                
+                codeMessage.innerHTML = `<div class="success">Code accepted! Starting game...</div>`;
+                
+                setTimeout(() => {
+                    codeScreen.style.opacity = '0';
+                    codeScreen.style.pointerEvents = 'none';
+                    gameScreen.style.opacity = '1';
+                    gameScreen.style.pointerEvents = 'auto';
+                    
+                    stopCoinAnimation();
+                    startGame();
+                }, 1000);
+            } else {
+                // Wrong code
+                console.log("Wrong code entered");
+                codeInput.style.borderColor = 'red';
+                codeInput.value = '';
+                codeInput.placeholder = 'Wrong code! Try again';
+                codeMessage.innerHTML = `<div class="error">Invalid code. Please try again.</div>`;
+                setTimeout(() => {
+                    codeInput.style.borderColor = '#FFD700';
+                    codeInput.placeholder = 'Enter Code Here';
+                    codeMessage.innerHTML = '';
+                    codeInput.focus();
+                }, 2000);
+            }
+        });
+        
+        // Allow Enter key to submit code
+        codeInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                submitCodeBtn.click();
+            }
+        });
+        
+        // Make sure code input is always focusable
+        codeInput.addEventListener('focus', () => {
+            codeInput.style.borderColor = '#FFA500';
+            codeInput.style.boxShadow = '0 0 10px rgba(255, 215, 0, 0.5)';
+        });
+        
+        codeInput.addEventListener('blur', () => {
+            codeInput.style.borderColor = '#FFD700';
+            codeInput.style.boxShadow = 'none';
+        });
+        
+        // Play again button
+        playAgainBtn.addEventListener('click', () => {
+            endScreen.style.opacity = '0';
+            endScreen.style.pointerEvents = 'none';
+            welcomeScreen.style.opacity = '1';
+            welcomeScreen.style.pointerEvents = 'auto';
+            welcomeSound.play();
+            drumSound.play();
+            
+            // Restart background music if it was playing
+            if (isMusicPlaying) {
+                backgroundMusic.play();
+            }
+        });
+        
+        // Control buttons with smooth movement
+        let moveInterval;
+        
+        leftBtn.addEventListener('mousedown', () => startMoving(-5));
+        leftBtn.addEventListener('touchstart', () => startMoving(-5));
+        leftBtn.addEventListener('mouseup', stopMoving);
+        leftBtn.addEventListener('touchend', stopMoving);
+        leftBtn.addEventListener('mouseleave', stopMoving);
+        
+        rightBtn.addEventListener('mousedown', () => startMoving(5));
+        rightBtn.addEventListener('touchstart', () => startMoving(5));
+        rightBtn.addEventListener('mouseup', stopMoving);
+        rightBtn.addEventListener('touchend', stopMoving);
+        rightBtn.addEventListener('mouseleave', stopMoving);
+        
+        // Keyboard controls with smooth movement
+        let keys = {};
+        
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            
+            if (e.key === 'ArrowLeft') {
+                startMoving(-5);
+            } else if (e.key === 'ArrowRight') {
+                startMoving(5);
+            }
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+            
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                stopMoving();
+            }
+        });
+        
+        function startMoving(direction) {
+            if (moveInterval) clearInterval(moveInterval);
+            
+            moveInterval = setInterval(() => {
+                pandaPosition += direction;
+                
+                if (pandaPosition < 20) pandaPosition = 20;
+                if (pandaPosition > 340) pandaPosition = 340;
+                
+                panda.style.left = pandaPosition + 'px';
+            }, 16);
+        }
+        
+        function stopMoving() {
+            if (moveInterval) {
+                clearInterval(moveInterval);
+                moveInterval = null;
+            }
+        }
+        
+        function startCoinAnimation() {
+            coinSound.play();
+            const coinInterval = setInterval(() => {
+                if (codeScreen.style.opacity === '0') {
+                    clearInterval(coinInterval);
+                    return;
+                }
+                
+                createCoin();
+            }, 300);
+        }
+        
+        function stopCoinAnimation() {
+            document.querySelectorAll('.coin').forEach(coin => coin.remove());
+        }
+        
+        function createCoin() {
+            const coin = document.createElement('div');
+            coin.classList.add('coin');
+            coin.style.left = Math.random() * 370 + 'px';
+            coin.style.top = '-30px';
+            coin.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            codeScreen.appendChild(coin);
+            
+            setTimeout(() => {
+                if (coin.parentNode) {
+                    coin.parentNode.removeChild(coin);
+                }
+            }, 5000);
+        }
+        
+        function startGame() {
+            // Reset game state
+            score = 0;
+            gameTime = 120;
+            pandaPosition = 180;
+            combo = 1;
+            highestComboValue = 1;
+            applesCollected = 0;
+            activePowerUps = [];
+            speedMultiplier = 1;
+            
+            // Apply difficulty settings
+            const settings = difficultySettings[difficulty];
+            gameTime = Math.floor(gameTime * (difficulty === 'easy' ? 1 : difficulty === 'medium' ? 0.9 : 0.8));
+            
+            // Update UI
+            scoreDisplay.textContent = score;
+            timeLeft.textContent = gameTime;
+            comboText.textContent = '1x';
+            comboText.classList.remove('multiplier-active');
+            
+            // Clear game area
+            document.querySelectorAll('.apple, .bomb, .golden-apple, .power-up').forEach(item => item.remove());
+            
+            // Start game loops
+            gameSound.play();
+            gameInterval = setInterval(updateGame, 1000);
+            
+            // Create items based on difficulty
+            itemInterval = setInterval(() => {
+                createApple();
+                if (Math.random() < 0.3) createBomb();
+                if (Math.random() < 0.1) createGoldenApple();
+                if (Math.random() < 0.05) createPowerUp();
+            }, settings.appleFrequency);
+        }
+        
+        function createApple() {
+            const apple = document.createElement('div');
+            apple.classList.add('apple');
+            apple.textContent = '🍎';
+            
+            const leftPos = Math.random() * 340 + 20;
+            apple.style.left = leftPos + 'px';
+            apple.style.top = '-40px';
+            
+            const fallSpeed = (Math.random() * 3 + 2) * difficultySettings[difficulty].speed * speedMultiplier;
+            
+            gameScreen.querySelector('.game-area').appendChild(apple);
+            
+            let appleTop = -40;
+            const appleFall = setInterval(() => {
+                appleTop += fallSpeed;
+                apple.style.top = appleTop + 'px';
+                
+                const appleRect = apple.getBoundingClientRect();
+                const pandaRect = panda.getBoundingClientRect();
+                
+                if (checkCollision(appleRect, pandaRect)) {
+                    eatSound.currentTime = 0;
+                    eatSound.play();
+                    score += 2 * combo;
+                    applesCollected++;
+                    updateScore();
+                    apple.remove();
+                    clearInterval(appleFall);
+                    
+                    increaseCombo();
+                    
+                    panda.style.transform = 'scale(1.2)';
+                    setTimeout(() => {
+                        panda.style.transform = 'scale(1)';
+                    }, 200);
+                }
+                
+                if (appleTop > 500) {
+                    apple.remove();
+                    clearInterval(appleFall);
+                    resetCombo();
+                }
+            }, 30);
+        }
+        
+        function createBomb() {
+            const bomb = document.createElement('div');
+            bomb.classList.add('bomb');
+            bomb.textContent = '💣';
+            
+            const leftPos = Math.random() * 340 + 20;
+            bomb.style.left = leftPos + 'px';
+            bomb.style.top = '-40px';
+            
+            const fallSpeed = (Math.random() * 3 + 2) * difficultySettings[difficulty].speed * speedMultiplier;
+            
+            gameScreen.querySelector('.game-area').appendChild(bomb);
+            
+            let bombTop = -40;
+            const bombFall = setInterval(() => {
+                bombTop += fallSpeed;
+                bomb.style.top = bombTop + 'px';
+                
+                const bombRect = bomb.getBoundingClientRect();
+                const pandaRect = panda.getBoundingClientRect();
+                
+                if (checkCollision(bombRect, pandaRect)) {
+                    bombSound.play();
+                    score = Math.max(0, score - 10);
+                    updateScore();
+                    bomb.remove();
+                    clearInterval(bombFall);
+                    
+                    resetCombo();
+                    
+                    // Visual feedback for bomb hit
+                    gameScreen.style.backgroundColor = '#ff4444';
+                    setTimeout(() => {
+                        gameScreen.style.backgroundColor = '';
+                    }, 200);
+                }
+                
+                if (bombTop > 500) {
+                    bomb.remove();
+                    clearInterval(bombFall);
+                }
+            }, 30);
+        }
+        
+        function createGoldenApple() {
+            const goldenApple = document.createElement('div');
+            goldenApple.classList.add('golden-apple');
+            goldenApple.textContent = '🍏';
+            
+            const leftPos = Math.random() * 340 + 20;
+            goldenApple.style.left = leftPos + 'px';
+            goldenApple.style.top = '-40px';
+            
+            const fallSpeed = (Math.random() * 2 + 1) * difficultySettings[difficulty].speed * speedMultiplier;
+            
+            gameScreen.querySelector('.game-area').appendChild(goldenApple);
+            
+            let appleTop = -40;
+            const appleFall = setInterval(() => {
+                appleTop += fallSpeed;
+                goldenApple.style.top = appleTop + 'px';
+                
+                const appleRect = goldenApple.getBoundingClientRect();
+                const pandaRect = panda.getBoundingClientRect();
+                
+                if (checkCollision(appleRect, pandaRect)) {
+                    powerupSound.play();
+                    score += 20 * combo;
+                    applesCollected++;
+                    updateScore();
+                    goldenApple.remove();
+                    clearInterval(appleFall);
+                    
+                    increaseCombo();
+                    showCombo('GOLDEN APPLE! +20');
+                    
+                    panda.style.transform = 'scale(1.5)';
+                    setTimeout(() => {
+                        panda.style.transform = 'scale(1)';
+                    }, 300);
+                }
+                
+                if (appleTop > 500) {
+                    goldenApple.remove();
+                    clearInterval(appleFall);
+                }
+            }, 30);
+        }
+        
+        function createPowerUp() {
+            const powerUp = document.createElement('div');
+            powerUp.classList.add('power-up');
+            powerUp.textContent = '⚡';
+            powerUp.dataset.type = 'speed';
+            
+            const leftPos = Math.random() * 340 + 20;
+            powerUp.style.left = leftPos + 'px';
+            powerUp.style.top = '-40px';
+            
+            const fallSpeed = (Math.random() * 2 + 1) * difficultySettings[difficulty].speed;
+            
+            gameScreen.querySelector('.game-area').appendChild(powerUp);
+            
+            let powerUpTop = -40;
+            const powerUpFall = setInterval(() => {
+                powerUpTop += fallSpeed;
+                powerUp.style.top = powerUpTop + 'px';
+                
+                const powerUpRect = powerUp.getBoundingClientRect();
+                const pandaRect = panda.getBoundingClientRect();
+                
+                if (checkCollision(powerUpRect, pandaRect)) {
+                    powerupSound.play();
+                    powerUp.remove();
+                    clearInterval(powerUpFall);
+                    
+                    activatePowerUp('speed');
+                    showCombo('SPEED BOOST!');
+                }
+                
+                if (powerUpTop > 500) {
+                    powerUp.remove();
+                    clearInterval(powerUpFall);
+                }
+            }, 30);
+        }
+        
+        function activatePowerUp(type) {
+            if (type === 'speed') {
+                speedMultiplier = 0.7;
+                activePowerUps.push({ type: 'speed', duration: 5000 });
+                
+                setTimeout(() => {
+                    speedMultiplier = 1;
+                    activePowerUps = activePowerUps.filter(p => p.type !== 'speed');
+                }, 5000);
+            }
+        }
+        
+        function checkCollision(rect1, rect2) {
+            return (
+                rect1.left < rect2.right &&
+                rect1.right > rect2.left &&
+                rect1.top < rect2.bottom &&
+                rect1.bottom > rect2.top
+            );
+        }
+        
+        function increaseCombo() {
+            combo++;
+            comboText.textContent = combo + 'x';
+            
+            if (combo > 1) {
+                comboText.classList.add('multiplier-active');
+                comboSound.play();
+            }
+            
+            if (combo > highestComboValue) {
+                highestComboValue = combo;
+            }
+            
+            // Show combo message for high combos
+            if (combo === 5) {
+                showCombo('5x COMBO!');
+                unlockAchievement('Combo Starter', 'Reached a 5x combo!');
+            } else if (combo === 10) {
+                showCombo('10x COMBO! AMAZING!');
+                unlockAchievement('Combo Master', 'Reached a 10x combo!');
+            } else if (combo === 15) {
+                showCombo('15x COMBO! LEGENDARY!');
+                unlockAchievement('Combo Legend', 'Reached a 15x combo!');
+            }
+            
+            // Reset combo timeout
+            clearTimeout(comboTimeout);
+            comboTimeout = setTimeout(resetCombo, 3000);
+        }
+        
+        function resetCombo() {
+            if (combo > 1) {
+                showCombo('COMBO BROKEN!');
+            }
+            combo = 1;
+            comboText.textContent = '1x';
+            comboText.classList.remove('multiplier-active');
+        }
+        
+        function showCombo(message) {
+            comboDisplay.textContent = message;
+            comboDisplay.style.opacity = '1';
+            
+            setTimeout(() => {
+                comboDisplay.style.opacity = '0';
+            }, 1500);
+        }
+        
+        function unlockAchievement(title, description) {
+            achievementTitle.textContent = title;
+            achievementDesc.textContent = description;
+            achievementPopup.style.opacity = '1';
+            
+            setTimeout(() => {
+                achievementPopup.style.opacity = '0';
+            }, 3000);
+        }
+        
+        function updateScore() {
+            scoreDisplay.textContent = score;
+        }
+        
+        function updateGame() {
+            gameTime--;
+            timeLeft.textContent = gameTime;
+            
+            if (gameTime <= 0) {
+                endGame();
+            }
+        }
+        
+        function updateLeaderboardDisplay() {
+            leaderboardList.innerHTML = '';
+            
+            // Sort leaderboard by score
+            const sortedLeaderboard = [...leaderboard].sort((a, b) => b.score - a.score).slice(0, 5);
+            
+            if (sortedLeaderboard.length === 0) {
+                leaderboardList.innerHTML = '<div class="message">No scores yet!</div>';
+                return;
+            }
+            
+            sortedLeaderboard.forEach((entry, index) => {
+                const item = document.createElement('div');
+                item.className = 'leaderboard-item';
+                item.innerHTML = `
+                    <span>${index + 1}. ${entry.name}</span>
+                    <span>${entry.score}</span>
+                `;
+                leaderboardList.appendChild(item);
+            });
+        }
+        
+        function endGame() {
+            clearInterval(gameInterval);
+            clearInterval(itemInterval);
+            stopMoving();
+            
+            document.querySelectorAll('.apple, .bomb, .golden-apple, .power-up').forEach(item => item.remove());
+            
+            finalScore.textContent = score;
+            applesEaten.textContent = applesCollected;
+            highestCombo.textContent = highestComboValue + 'x';
+            
+            // Add to leaderboard
+            const playerName = `Player${Math.floor(Math.random() * 1000)}`;
+            leaderboard.push({ name: playerName, score: score, date: new Date().toLocaleDateString() });
+            localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+            updateLeaderboardDisplay();
+            
+            // Unlock achievements based on score
+            if (score >= 100) {
+                unlockAchievement('Centurion', 'Scored over 100 points!');
+            }
+            if (score >= 250) {
+                unlockAchievement('High Roller', 'Scored over 250 points!');
+            }
+            if (score >= 500) {
+                unlockAchievement('Panda Master', 'Scored over 500 points!');
+            }
+            
+            gameScreen.style.opacity = '0';
+            gameScreen.style.pointerEvents = 'none';
+            endScreen.style.opacity = '1';
+            endScreen.style.pointerEvents = 'auto';
+            
+            gameSound.pause();
+            gameSound.currentTime = 0;
+            endSound.play();
+            drumSound.play();
+        }
+    </script>
+</body>
+</html>
